@@ -67,4 +67,8 @@ public class Emprestimo {
 
         return new Emprestimo(UUID.randomUUID(), livro, membro, hoje, dataDevolucao);
     }
+
+    public void devolver(){
+        livro.devolver();
+    }
 }
