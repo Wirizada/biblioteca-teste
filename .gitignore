@@ -1,0 +1,7 @@
+# Maven build output
+target/
+CLAUDE.md
+PLANO-DE-ESTUDOS.md
+# IntelliJ IDEA
+.idea/
+*.iml
