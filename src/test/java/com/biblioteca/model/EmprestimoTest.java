@@ -32,4 +32,19 @@ class EmprestimoTest {
 
         assertEquals(Status.DISPONIVEL, livro.getStatus());
     }
+
+    @Test
+    void naoEmprestarLivroIndisponivel() {
+
+        Livro livro = new Livro(UUID.randomUUID(), "Livro Teste", Status.DISPONIVEL, "Autor Teste");
+        Membro membro = new Membro(UUID.randomUUID(), "Membro Teste", "12345678900");
+
+        LocalDate hoje = LocalDate.of(2026, 11, 12);
+
+        Emprestimo.criarEmprestimo(livro, membro, hoje);
+
+        assertThrows(IllegalStateException.class, () -> Emprestimo.criarEmprestimo(livro, membro, hoje));
+        assertEquals(Status.EMPRESTADO, livro.getStatus());
+    }
+
 }
