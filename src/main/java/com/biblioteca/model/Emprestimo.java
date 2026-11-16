@@ -1,6 +1,8 @@
 package com.biblioteca.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 public class Emprestimo {
@@ -10,6 +12,7 @@ public class Emprestimo {
     private Membro membro;
     private LocalDate dataEmprestimo;
     private LocalDate dataDevolucao;
+    private static final BigDecimal MULTA_POR_DIA = new BigDecimal("2.00");
 
     public Emprestimo(UUID id, Livro livro, Membro membro, LocalDate dataEmprestimo, LocalDate dataDevolucao) {
         this.id = id;
@@ -61,7 +64,7 @@ public class Emprestimo {
 
     public static Emprestimo criarEmprestimo(Livro livro, Membro membro, LocalDate hoje) {
 
-        if (!livro.estaDisponivel() || !membro.temVaga()){
+        if (!livro.estaDisponivel() || !membro.temVaga()) {
             throw new IllegalStateException("Não é possivel realizar o emprestimo");
         }
 
@@ -74,7 +77,17 @@ public class Emprestimo {
         return emprestimo;
     }
 
-    public void devolver(){
+    public BigDecimal calcularMulta(LocalDate dataDevolvida) {
+        long dias = ChronoUnit.DAYS.between(dataDevolucao, dataDevolvida);
+
+        if (dias < 0) {
+            return new BigDecimal("0.00");
+        }
+
+        return BigDecimal.valueOf(dias).multiply(MULTA_POR_DIA);
+    }
+
+    public void devolver() {
         livro.devolver();
     }
 }

@@ -3,6 +3,7 @@ package com.biblioteca.model;
 import com.biblioteca.model.enums.Status;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -89,5 +90,47 @@ class EmprestimoTest {
         Livro livro = new Livro(UUID.randomUUID(), "Livro Teste", Status.DISPONIVEL, "Autor Teste");
         Emprestimo.criarEmprestimo(livro, membro, hoje);
         assertEquals(true, membro.temVaga());
+    }
+
+    @Test
+    void multaDeDoisReaisPorDiaDeAtraso() {
+        LocalDate hoje = LocalDate.of(2026, 11, 12);
+        LocalDate dataDevolucao = hoje.plusDays(14);
+
+        Emprestimo emprestimo = new Emprestimo(UUID.randomUUID(), null, null, hoje, dataDevolucao);
+
+        LocalDate dataDevolvida = LocalDate.of(2026, 11, 29);
+
+        BigDecimal multa = emprestimo.calcularMulta(dataDevolvida);
+
+        assertEquals(new BigDecimal("6.00"), multa);
+    }
+
+    @Test
+    void devolvidoNoPrazo() {
+        LocalDate hoje = LocalDate.of(2026, 11, 12);
+        LocalDate dataDevolucao = hoje.plusDays(14);
+
+        Emprestimo emprestimo = new Emprestimo(UUID.randomUUID(), null, null, hoje, dataDevolucao);
+
+        LocalDate dataDevolvida = LocalDate.of(2026, 11, 26);
+
+        BigDecimal multa = emprestimo.calcularMulta(dataDevolvida);
+
+        assertEquals(new BigDecimal("0.00"), multa);
+    }
+
+    @Test
+    void devolvidoAntesDoPrazo() {
+        LocalDate hoje = LocalDate.of(2026, 11, 12);
+        LocalDate dataDevolucao = hoje.plusDays(14);
+
+        Emprestimo emprestimo = new Emprestimo(UUID.randomUUID(), null, null, hoje, dataDevolucao);
+
+        LocalDate dataDevolvida = LocalDate.of(2026, 11, 24);
+
+        BigDecimal multa = emprestimo.calcularMulta(dataDevolvida);
+
+        assertEquals(new BigDecimal("0.00"), multa);
     }
 }
