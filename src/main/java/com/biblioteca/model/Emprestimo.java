@@ -1,7 +1,5 @@
 package com.biblioteca.model;
 
-import com.biblioteca.model.enums.Status;
-
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -62,10 +60,18 @@ public class Emprestimo {
     }
 
     public static Emprestimo criarEmprestimo(Livro livro, Membro membro, LocalDate hoje) {
-        livro.emprestar();
-        LocalDate dataDevolucao = hoje.plusDays(14);
 
-        return new Emprestimo(UUID.randomUUID(), livro, membro, hoje, dataDevolucao);
+        if (!livro.estaDisponivel() || !membro.temVaga()){
+            throw new IllegalStateException("Não é possivel realizar o emprestimo");
+        }
+
+        LocalDate dataDevolucao = hoje.plusDays(14);
+        Emprestimo emprestimo = new Emprestimo(UUID.randomUUID(), livro, membro, hoje, dataDevolucao);
+
+        membro.registrarEmprestimo(emprestimo);
+        livro.emprestar();
+
+        return emprestimo;
     }
 
     public void devolver(){

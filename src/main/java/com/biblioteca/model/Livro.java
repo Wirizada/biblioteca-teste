@@ -49,6 +49,10 @@ public class Livro {
         this.status = Status.EMPRESTADO;
     }
 
+    public boolean estaDisponivel() {
+        return status == Status.DISPONIVEL;
+    }
+
     public void devolver() {
         this.status = Status.DISPONIVEL;
     }
