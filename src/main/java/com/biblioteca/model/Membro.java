@@ -47,9 +47,10 @@ public class Membro {
     }
 
     public void registrarEmprestimo(Emprestimo emprestimo) {
-        if (livrosEmprestados.size() >= LIMITE) {
-            throw new IllegalStateException("Membro não pode emprestar mais que 3 livros");
+        if (!temVaga()) {
+            throw new IllegalStateException("Membro não tem limite disponivel");
         }
+
         livrosEmprestados.add(emprestimo);
     }
 

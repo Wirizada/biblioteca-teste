@@ -43,7 +43,7 @@ public class Livro {
     }
 
     public void emprestar() {
-        if (this.status != Status.DISPONIVEL) {
+        if (!estaDisponivel()) {
             throw new IllegalStateException("Não é possível criar um empréstimo para um livro que não está disponível.");
         }
         this.status = Status.EMPRESTADO;
