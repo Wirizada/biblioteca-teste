@@ -2,6 +2,7 @@ package com.biblioteca.model;
 
 import com.biblioteca.model.enums.Status;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class Livro {
@@ -55,5 +56,16 @@ public class Livro {
 
     public void devolver() {
         this.status = Status.DISPONIVEL;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Livro livro)) return false;
+        return Objects.equals(id, livro.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
