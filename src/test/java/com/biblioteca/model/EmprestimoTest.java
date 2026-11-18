@@ -143,7 +143,7 @@ class EmprestimoTest {
 
         Emprestimo emprestimo = new Emprestimo(UUID.randomUUID(), livro, membro, hoje, dataDevolucao);
 
-        emprestimo.renovar(LocalDate.of(2026,11,26));
+        emprestimo.renovar(LocalDate.of(2026, 11, 26));
 
         assertEquals(LocalDate.of(2026, 12, 10), emprestimo.getDataDevolucao());
         assertEquals(Status.EMPRESTADO, livro.getStatus());
@@ -158,6 +158,34 @@ class EmprestimoTest {
 
         Emprestimo emprestimo = new Emprestimo(UUID.randomUUID(), livro, membro, hoje, dataDevolucao);
 
-        assertThrows(IllegalStateException.class, () -> emprestimo.renovar(LocalDate.of(2026,11,27)));
+        assertThrows(IllegalStateException.class, () -> emprestimo.renovar(LocalDate.of(2026, 11, 27)));
+    }
+
+    @Test
+    void NaoRenovarMaisQueUmaVez() {
+        LocalDate hoje = LocalDate.of(2026, 11, 12);
+        LocalDate dataDevolucao = hoje.plusDays(14);
+        Membro membro = new Membro(UUID.randomUUID(), "Membro Teste", "12345678900");
+        Livro livro = new Livro(UUID.randomUUID(), "Livro Teste", Status.EMPRESTADO, "Autor Teste");
+        Emprestimo emprestimo = new Emprestimo(UUID.randomUUID(), livro, membro, hoje, dataDevolucao);
+        emprestimo.renovar(LocalDate.of(2026, 11, 26));
+
+
+        assertThrows(IllegalStateException.class, () -> emprestimo.renovar(LocalDate.of(2026, 11, 30)));
+        assertEquals(1, emprestimo.getVezesRenovadas());
+    }
+
+    @Test
+    void naoTrocaMudaDataAoRecusarRenovacao() {
+        LocalDate hoje = LocalDate.of(2026, 11, 12);
+        LocalDate dataDevolucao = hoje.plusDays(14);
+        Membro membro = new Membro(UUID.randomUUID(), "Membro Teste", "12345678900");
+        Livro livro = new Livro(UUID.randomUUID(), "Livro Teste", Status.EMPRESTADO, "Autor Teste");
+        Emprestimo emprestimo = new Emprestimo(UUID.randomUUID(), livro, membro, hoje, dataDevolucao);
+        emprestimo.renovar(LocalDate.of(2026, 11, 26));
+
+
+        assertThrows(IllegalStateException.class, () -> emprestimo.renovar(LocalDate.of(2026, 12, 8)));
+        assertEquals(LocalDate.of(2026,12,10), emprestimo.getDataDevolucao());
     }
 }

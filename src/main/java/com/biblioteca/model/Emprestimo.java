@@ -13,6 +13,8 @@ public class Emprestimo {
     private LocalDate dataEmprestimo;
     private LocalDate dataDevolucao;
     private static final BigDecimal MULTA_POR_DIA = new BigDecimal("2.00");
+    private int vezesRenovadas = 0;
+    private static final int LIMITE_RENOVACAO = 1;
 
     public Emprestimo(UUID id, Livro livro, Membro membro, LocalDate dataEmprestimo, LocalDate dataDevolucao) {
         this.id = id;
@@ -62,6 +64,10 @@ public class Emprestimo {
         this.dataDevolucao = dataDevolucao;
     }
 
+    public int getVezesRenovadas() {
+        return vezesRenovadas;
+    }
+
     public static Emprestimo criarEmprestimo(Livro livro, Membro membro, LocalDate hoje) {
 
         if (!livro.estaDisponivel() || !membro.temVaga()) {
@@ -88,9 +94,10 @@ public class Emprestimo {
     }
 
     public void renovar (LocalDate hoje){
-        if (hoje.isAfter(dataDevolucao)){
+        if (hoje.isAfter(dataDevolucao) || vezesRenovadas == LIMITE_RENOVACAO){
             throw new IllegalStateException("Não é permitido renovar o emprestimo");
         }
+        vezesRenovadas++;
         setDataDevolucao(dataDevolucao.plusDays(14));
     }
 
