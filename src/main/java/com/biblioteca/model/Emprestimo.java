@@ -87,6 +87,13 @@ public class Emprestimo {
         return BigDecimal.valueOf(dias).multiply(MULTA_POR_DIA);
     }
 
+    public void renovar (LocalDate hoje){
+        if (hoje.isAfter(dataDevolucao)){
+            throw new IllegalStateException("Não é permitido renovar o emprestimo");
+        }
+        setDataDevolucao(dataDevolucao.plusDays(14));
+    }
+
     public void devolver() {
         livro.devolver();
     }
