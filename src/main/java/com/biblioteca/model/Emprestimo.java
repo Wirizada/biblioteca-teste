@@ -3,6 +3,7 @@ package com.biblioteca.model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Emprestimo {
@@ -70,8 +71,12 @@ public class Emprestimo {
 
     public static Emprestimo criarEmprestimo(Livro livro, Membro membro, LocalDate hoje) {
 
-        if (!livro.estaDisponivel() || !membro.temVaga()) {
-            throw new IllegalStateException("Não é possivel realizar o emprestimo");
+        if (!livro.estaDisponivel()) {
+            throw new IllegalStateException("Livro não está disponivel para emprestimo.");
+        }
+
+        if (!membro.temVaga()){
+            throw new IllegalStateException("Membro não tem vaga para realizar emprestimo.");
         }
 
         LocalDate dataDevolucao = hoje.plusDays(14);
@@ -103,5 +108,16 @@ public class Emprestimo {
 
     public void devolver() {
         livro.devolver();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Emprestimo that)) return false;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

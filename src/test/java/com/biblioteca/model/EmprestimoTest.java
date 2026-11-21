@@ -184,7 +184,6 @@ class EmprestimoTest {
         Emprestimo emprestimo = new Emprestimo(UUID.randomUUID(), livro, membro, hoje, dataDevolucao);
         emprestimo.renovar(LocalDate.of(2026, 11, 26));
 
-
         assertThrows(IllegalStateException.class, () -> emprestimo.renovar(LocalDate.of(2026, 12, 8)));
         assertEquals(LocalDate.of(2026,12,10), emprestimo.getDataDevolucao());
     }
