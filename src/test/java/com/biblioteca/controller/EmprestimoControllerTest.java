@@ -1,5 +1,6 @@
 package com.biblioteca.controller;
 
+import com.biblioteca.model.Emprestimo;
 import com.biblioteca.model.Livro;
 import com.biblioteca.model.Membro;
 import com.biblioteca.model.enums.Status;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -88,5 +90,27 @@ class EmprestimoControllerTest {
                     livroTeste.getId() + "\"}"))
             .andExpect(status().isConflict())
             .andExpect(status().reason("Livro não está disponivel para emprestimo."));
+    }
+
+    @Test
+    void naoRealizarMaisDeTresEmprestimoPorMembro() throws Exception {
+        UUID id = UUID.randomUUID();
+        Membro membroTeste = new Membro(id, "João", "12345678901");
+        Livro livroTeste = new Livro(id, "Teste", Status.DISPONIVEL, "Teste");
+        LocalDate hoje = LocalDate.of(2026, 11, 12);
+
+        livroRepositoryEmMemoria.salvar(livroTeste);
+        membroRepositoryEmMemoria.salvar(membroTeste);
+
+        for (int i = 0; i < 3; i++) {
+            Livro livro = new Livro(UUID.randomUUID(), "Livro Teste", Status.DISPONIVEL, "Autor Teste");
+            Emprestimo.criarEmprestimo(livro, membroTeste, hoje);
+        }
+
+        mockMvc.perform(post("/emprestimos").contentType("application/json")
+                        .content("{\"membroId\":\"" + membroTeste.getId() + "\",\"livroId\":\"" +
+                                livroTeste.getId() + "\"}"))
+                .andExpect(status().isConflict())
+                .andExpect(status().reason("Membro não tem vaga para realizar emprestimo."));
     }
 }
